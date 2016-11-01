@@ -1,0 +1,87 @@
+---
+title: "Categorias Populacionais - MUNIC"
+author: "Fabio Barros"
+date: "1 de novembro de 2016"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(knitr)
+
+# Read Munic data
+munic <- read_excel(path = "../data/Base_MUNIC_2015.xls", sheet = 8)
+```
+## MUNIC
+
+MUNIC é a sigla da Pesquisa de Informações Básicas Municipais do IBGE. 
+
+Ela é realizada anualmente desde 2001 e possibilita identificar as carências existentes nos municípios brasileiros, contribuindo, assim, para a democratização da gestão pública por meio da formulação e do aprimoramento de políticas diferenciadas para questões específicas de suas populações (IBGE, 2015).
+
+## Classes populacionais
+
+Há 7 (sete) classes populacionais na MUNIC:
+```{r, echo=FALSE}
+munic$A203 <- as.factor(munic$A203)
+kable(levels(munic$A203))
+```
+
+Distribuíçao dos municipios nas classes:
+
+```{r, echo=FALSE}
+t <- as.data.frame(table(munic$A203))
+names(t) <- c("Classe", "Quantidade")
+t$Percentual <- round(100 * t$Quantidade / sum(t$Quantidade), 2)
+kable(x = t)
+
+g1 <- ggplot(data = munic, mapping = aes(x = A203, colour = A203, fill = A203)) +
+  geom_bar() + xlab("") + 
+  ylab("Numero de municipios") + ggtitle("Classes Populacionais") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")          
+g1
+```
+
+
+# Estatística descritiva
+
+## Estatística descritiva da váriavel população:
+```{r, echo=FALSE}
+summary(munic$A204)
+```
+
+- 50% dos municipios tem população menor ou igual a 11500 habitantes (mediana). 
+- 50% dos municipios estao no intervalo populacional de 5450 a 29950 habitantes.
+- 75% tem população menor ou igual a 29950 habitantes (terceiro quartil).
+
+# Histograma
+```{r, echo=FALSE}
+g3 <- ggplot(data = munic, aes(x = A204)) + 
+  geom_histogram(binwidth = 10000, fill = "blue") +
+  xlab("População") + ylab("Quantidade")
+g3
+```
+
+Pela figura, pode-se notar que a maior parte das cidades se caracteriza por pequenas populaçoes.
+
+Selecionando os dados dos municipios com menos de 100.000 habitantes, o histograma muda:
+
+```{r, echo=FALSE}
+munic100 <- munic[munic$A204 <= 200000, ]
+g4 <- ggplot(data = munic100, aes(x = A204)) + 
+  geom_histogram(binwidth = 1000, fill = "blue") +
+  xlab("População") + ylab("Quantidade")
+g4
+```
+
+## Grafico de caixa
+```{r, echo=FALSE}
+munic$A199 <- as.factor(munic$A199)
+g5 <- ggplot(data = munic, mapping = aes(A199, A204)) + geom_boxplot() +
+  xlab("Classes populacionais") + ylab("População")
+g5
+```
+
+O gráfico de caixa apresenta-se bastante achatado nas pequenas populaçoes. 
