@@ -1,7 +1,7 @@
 ---
-title: "Categorias Populacionais - MUNIC"
-author: "Fabio Barros"
-date: "1 de novembro de 2016"
+title: "Classes Populacionais - MUNIC"
+author: "Fábio Barros - DETRV/SEGES/MP"
+date: "3 de novembro de 2016"
 output: pdf_document
 ---
 
@@ -14,13 +14,13 @@ library(knitr)
 # Read Munic data
 munic <- read_excel(path = "../data/Base_MUNIC_2015.xls", sheet = 8)
 ```
-## MUNIC
+# MUNIC
 
 MUNIC é a sigla da Pesquisa de Informações Básicas Municipais do IBGE. 
 
-Ela é realizada anualmente desde 2001 e possibilita identificar as carências existentes nos municípios brasileiros, contribuindo, assim, para a democratização da gestão pública por meio da formulação e do aprimoramento de políticas diferenciadas para questões específicas de suas populações (IBGE, 2015).
+Ela é realizada anualmente desde 2001 e possibilita identificar as carências existentes nos municípios brasileiros, contribuindo, assim, para a democratização da gestão pública por meio da formulação e do aprimoramento de políticas diferenciadas para questões específicas de suas populações.
 
-## Classes populacionais
+# Classes populacionais
 
 Há 7 (sete) classes populacionais na MUNIC:
 ```{r, echo=FALSE}
@@ -28,7 +28,7 @@ munic$A203 <- as.factor(munic$A203)
 kable(levels(munic$A203))
 ```
 
-Distribuíçao dos municipios nas classes:
+Distribuição dos municípios nas classes:
 
 ```{r, echo=FALSE}
 t <- as.data.frame(table(munic$A203))
@@ -45,43 +45,54 @@ g1
 ```
 
 
-# Estatística descritiva
-
-## Estatística descritiva da váriavel população:
+# Estatística descritiva da váriavel população
 ```{r, echo=FALSE}
 summary(munic$A204)
 ```
 
 - 50% dos municipios tem população menor ou igual a 11500 habitantes (mediana). 
-- 50% dos municipios estao no intervalo populacional de 5450 a 29950 habitantes.
-- 75% tem população menor ou igual a 29950 habitantes (terceiro quartil).
+- 50% dos municipios estão no intervalo populacional de 5450 a 24950 habitantes (intervalo interquartil).
+- 75% tem população menor ou igual a 24950 habitantes (terceiro quartil).
 
 # Histograma
 ```{r, echo=FALSE}
 g3 <- ggplot(data = munic, aes(x = A204)) + 
   geom_histogram(binwidth = 10000, fill = "blue") +
-  xlab("População") + ylab("Quantidade")
+  xlab("População") + ylab("Numero de municipios")
 g3
 ```
 
 Pela figura, pode-se notar que a maior parte das cidades se caracteriza por pequenas populaçoes.
 
-Selecionando os dados dos municipios com menos de 100.000 habitantes, o histograma muda:
+Selecionando os dados dos municipios com menos de 200 mil habitantes, o histograma muda:
 
 ```{r, echo=FALSE}
 munic100 <- munic[munic$A204 <= 200000, ]
 g4 <- ggplot(data = munic100, aes(x = A204)) + 
   geom_histogram(binwidth = 1000, fill = "blue") +
-  xlab("População") + ylab("Quantidade")
+  xlab("População") + ylab("Numero de municipios")
 g4
 ```
 
-## Grafico de caixa
+## Gráfico de caixa
 ```{r, echo=FALSE}
 munic$A199 <- as.factor(munic$A199)
 g5 <- ggplot(data = munic, mapping = aes(A199, A204)) + geom_boxplot() +
-  xlab("Classes populacionais") + ylab("População")
+  xlab("Regiões") + ylab("População")
 g5
 ```
 
-O gráfico de caixa apresenta-se bastante achatado nas pequenas populaçoes. 
+O gráfico de caixa apresenta-se bastante achatado nas pequenas populações. O pontos atípicos do gráfico correspondem às cidades com mais de 150 mil habitantes.
+
+# Possibilidades
+
+1. Utilizar as classes propostas pelo MUNIC.
+2. Agrupar as classes como abaixo:
+
+Classes             | Faixas                                     | Percentual  
+--------------------|--------------------------------------------|-----------
+Pequenos municípios | Até 10000 hab. (classes 1 e 2)             | 44,0%
+Medios municipios   | De 10001 a 100000 hab. (classes 3, 4, e 5) | 50,6%
+Grandes municipios  | Acima de 100001 hab. (classes 6 e 7)       | 5,4%
+
+3. Usar qualquer outra combinaçao como as acima. 
